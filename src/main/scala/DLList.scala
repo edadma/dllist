@@ -171,8 +171,8 @@ class DLList[T] extends AbstractBuffer[T] {
     override def toString: String = s"node[$v]"
   }
 
-  class Sentinel( name: String ) extends Node {
-    private def novalue = sys.error( s"$name sentinel has no value" )
+  class Sentinel( val name: String ) extends Node {
+    private def novalue = sys.error( s"$name has no value" )
 
     override def element = novalue
 
@@ -195,8 +195,15 @@ class DLList[T] extends AbstractBuffer[T] {
     override def toString: String = name
   }
 
-  val startSentinel = new Sentinel( "start sentinel" )
-  val endSentinel = new Sentinel( "end sentinel" )
+  val startSentinel =
+    new Sentinel( "start sentinel" ) {
+      override def preceding = sys.error( s"$name has no preceding node" )
+    }
+
+  val endSentinel =
+    new Sentinel( "end sentinel" ) {
+      override def following = sys.error( s"$name has no following node" )
+    }
 
   private var count = 0
 
