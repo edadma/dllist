@@ -1,10 +1,8 @@
 name := "dllist"
 
-version := "0.1"
+version := "0.1.1"
 
-scalaVersion := "2.12.7"
-
-//crossScalaVersions := Seq( "2.11.11" )
+scalaVersion := "2.12.8"
 
 scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials" )
 

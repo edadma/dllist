@@ -205,7 +205,7 @@ class DLList[T] extends AbstractBuffer[T] {
       override def following = sys.error( s"$name has no following node" )
     }
 
-  private var count = 0
+  protected var count = 0
 
   clear
 
@@ -232,11 +232,7 @@ class DLList[T] extends AbstractBuffer[T] {
   def node( n: Int ) = {
     require( 0 <= n && n < count, s"node index out of range: $n" )
 
-    if (n == 0)
-      headNode
-    else if (n == count - 1)
-      lastNode
-    else if (n <= count/2)
+    if (n <= count/2)
       nodeIterator drop n next
     else
       reverseNodeIterator drop (count - 1 - n) next
@@ -279,7 +275,11 @@ class DLList[T] extends AbstractBuffer[T] {
   def length = count
 
   def insertAll( n: Int, elems: Traversable[T] ) = {
-    var prev = node( n )
+    var prev =
+      if (isEmpty)
+        startSentinel
+      else
+        node( n ).prev
 
     elems foreach (e => prev = prev follow e)
   }
