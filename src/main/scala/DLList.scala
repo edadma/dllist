@@ -278,6 +278,8 @@ class DLList[T] extends AbstractBuffer[T] {
     var prev =
       if (isEmpty)
         startSentinel
+      else if (n == count)
+        lastNode
       else
         node( n ).prev
 

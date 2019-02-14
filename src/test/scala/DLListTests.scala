@@ -37,8 +37,6 @@ class DLListTests extends FreeSpec with PropertyChecks with Matchers {
 
 		val l1 = DLList[Int]( 3, 4, 5 )
 
-		l1.length shouldBe 3
-		l1.toString shouldBe "DLList(3, 4, 5)"
 		l1.insertAll( 0, List(6, 7, 8) )
 		l1.length shouldBe 6
 		l1.toString shouldBe "DLList(6, 7, 8, 3, 4, 5)"
@@ -48,6 +46,12 @@ class DLListTests extends FreeSpec with PropertyChecks with Matchers {
 		l2.insertAll( 0, List(6, 7, 8) )
 		l2.length shouldBe 3
 		l2.toString shouldBe "DLList(6, 7, 8)"
+
+    val l3 = DLList[Int]( 3, 4, 5 )
+
+    l3.insertAll( 3, List(6, 7, 8) )
+    l3.length shouldBe 6
+    l3.toString shouldBe "DLList(3, 4, 5, 6, 7, 8)"
 	}
 
 	"iteration" in {
