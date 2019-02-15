@@ -3,9 +3,18 @@ package xyz.hyperreal.dllist
 import scala.collection.mutable.ArrayBuffer
 
 
+object DLIndexedList {
+
+  def apply[T]( elems: T* ) =
+    new DLIndexedList[T] {
+      appendAll( elems )
+    }
+
+}
+
 class DLIndexedList[T] extends DLList[T] {
 
-  protected val array = new ArrayBuffer[Node]
+  protected lazy val array = new ArrayBuffer[Node]
 
   override def clear: Unit = {
     super.clear
@@ -32,11 +41,14 @@ class DLIndexedList[T] extends DLList[T] {
     n
   }
 
-//  override def insertAll( n: Int, elems: Traversable[T] ) = {
-//    super.insertAll( n, elems )
-//    array.insertAll( n, elems )
-//  }
+  override def insertAll( n: Int, elems: Traversable[T] ) =
+    array.insertAll( n, super._insertAll( n, elems ).iterator take n toList )
 
-  override def remove( n: Int ) = node( n ).unlink
+  override def remove( n: Int ) = {
+    super.remove( n )
+    array.remove( n ).element
+  }
+
+  override def toString = iterator mkString ("DLIndexedList(", ", ", ")")
 
 }

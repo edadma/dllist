@@ -274,7 +274,9 @@ class DLList[T] extends AbstractBuffer[T] {
 
   def length = count
 
-  def insertAll( n: Int, elems: Traversable[T] ) = {
+  def insertAll( n: Int, elems: Traversable[T] ) = _insertAll( n, elems )
+
+  protected def _insertAll( n: Int, elems: Traversable[T] ) = {
     var prev =
       if (isEmpty)
         startSentinel
@@ -282,8 +284,10 @@ class DLList[T] extends AbstractBuffer[T] {
         lastNode
       else
         node( n ).prev
+    val first = prev.next
 
     elems foreach (e => prev = prev follow e)
+    first
   }
 
   def remove( n: Int ) = node( n ).unlink
