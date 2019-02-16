@@ -49,6 +49,9 @@ class DLList[T] extends AbstractBuffer[T] {
     def follow( v: T ) = {
       val node = new Node( this, next, v )
 
+      if (v.isInstanceOf[NodeRef])
+        v.asInstanceOf[NodeRef] ref node
+
       next.prev = node
       next = node
       count += 1
@@ -57,6 +60,9 @@ class DLList[T] extends AbstractBuffer[T] {
 
     def precede( v: T ) = {
       val node = new Node( prev, this, v )
+
+      if (v.isInstanceOf[NodeRef])
+        v.asInstanceOf[NodeRef] ref node
 
       prev.next = node
       prev = node
