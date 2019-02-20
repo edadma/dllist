@@ -50,7 +50,7 @@ class DLList[T] extends AbstractBuffer[T] {
       val node = new Node( this, next, v )
 
       if (v.isInstanceOf[NodeRef])
-        v.asInstanceOf[NodeRef] ref node
+        v.asInstanceOf[NodeRef] ref node.asInstanceOf[DLList[Any]#Node]
 
       next.prev = node
       next = node
@@ -62,7 +62,7 @@ class DLList[T] extends AbstractBuffer[T] {
       val node = new Node( prev, this, v )
 
       if (v.isInstanceOf[NodeRef])
-        v.asInstanceOf[NodeRef] ref node
+        v.asInstanceOf[NodeRef] ref node.asInstanceOf[DLList[Any]#Node]
 
       prev.next = node
       prev = node
