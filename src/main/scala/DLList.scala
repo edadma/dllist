@@ -258,12 +258,12 @@ class DLList[T] extends AbstractBuffer[T] {
   // abstract Buffer methods
   //
 
-  def +=( elem: T ) = {
+  def addOne( elem: T ) = {
     appendElement( elem )
     this
   }
 
-  def +=:( elem: T ) = {
+  def prepend( elem: T ) = {
     prependElement( elem )
     this
   }
@@ -280,9 +280,13 @@ class DLList[T] extends AbstractBuffer[T] {
 
   def length = count
 
-  def insertAll( n: Int, elems: Traversable[T] ) = _insertAll( n, elems )
+  def patchInPlace( from: Int, patch: IterableOnce[T], replaced: Int ): DLList.this.type = ???
 
-  protected def _insertAll( n: Int, elems: Traversable[T] ) = {
+  def insert( idx: Int, elem: T ) = node( idx ).precede( elem )
+
+  def insertAll( n: Int, elems: IterableOnce[T] ): Unit = _insertAll( n, elems )
+
+  protected def _insertAll( n: Int, elems: IterableOnce[T] ) = {
     var prev =
       if (isEmpty)
         startSentinel
@@ -292,13 +296,25 @@ class DLList[T] extends AbstractBuffer[T] {
         node( n ).prev
     val first = prev.next
 
-    elems foreach (e => prev = prev follow e)
+    elems.iterator foreach (e => prev = prev follow e)
     first
   }
 
-  def remove( n: Int ) = node( n ).unlink
+  def remove( idx: Int, count: Int ) = {
+    def remove( n: Node, rem: Int ): Unit =
+      if (rem > 0) {
+        val next = n.following
 
-  def update( n: Int, newelem: T ): Unit = node( n ).v = newelem
+        n.unlink
+        remove( next, rem - 1 )
+      }
+
+    remove( node(idx), count )
+  }
+
+  def remove( idx: Int ) = node( idx ).unlink
+
+  def update( idx: Int, newelem: T ): Unit = node( idx ).v = newelem
 
   //
   // overrides

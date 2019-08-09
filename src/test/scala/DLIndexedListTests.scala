@@ -1,10 +1,10 @@
 package xyz.hyperreal.dllist
 
 import org.scalatest._
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class DLIndexedListTests extends FreeSpec with PropertyChecks with Matchers {
+class DLIndexedListTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers {
 
 	"empty" in {
 		val l = new DLIndexedList

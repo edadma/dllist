@@ -41,7 +41,7 @@ class DLIndexedList[T] extends DLList[T] {
     n
   }
 
-  override def insertAll( n: Int, elems: Traversable[T] ) =
+  override def insertAll( n: Int, elems: IterableOnce[T] ) =
     array.insertAll( n, super._insertAll( n, elems ).iterator take n toList )
 
   override def remove( n: Int ) = {
