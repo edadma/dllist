@@ -17,7 +17,6 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(file(
     githubRepository := name.value,
     mainClass := Some(s"${organization.value}.${name.value}.Main"),
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.9" % "test",
-    libraryDependencies += "io.github.edadma" %%% "cross-platform" % "0.1.0",
     publishMavenStyle := true,
     Test / publishArtifact := false,
     licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
