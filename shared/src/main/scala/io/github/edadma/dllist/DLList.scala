@@ -118,6 +118,7 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
     def iteratorUntil(last: Node): Iterator[Node] =
       new Iterator[Node] {
         private var node = Node.this
+        private var nextNode = node.next
 
         def hasNext: Boolean = (node ne last) && (node ne endSentinel)
 
@@ -126,7 +127,10 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
 
           val res = node
 
-          node = node.next
+          node = nextNode
+
+          if (hasNext) nextNode = node.next
+
           res
         }
       }
