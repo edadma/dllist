@@ -1,12 +1,14 @@
 ThisBuild / licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
 ThisBuild / versionScheme := Some("semver-spec")
 
+publish / skip := true
+
 lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("."))
   .settings(
     name := "dllist",
-    version := "0.1.2",
-    scalaVersion := "3.1.1",
+    version := "0.1.3",
+    scalaVersion := "3.2.0",
     scalacOptions ++=
       Seq(
         "-deprecation",
@@ -15,7 +17,7 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
         "-language:postfixOps",
         "-language:implicitConversions",
         "-language:existentials",
-        "-language:dynamics"
+        "-language:dynamics",
       ),
     organization := "io.github.edadma",
     githubOwner := "edadma",
@@ -24,13 +26,13 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
 //    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.11" % "test",
     publishMavenStyle := true,
     Test / publishArtifact := false,
-    licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
+    licenses += "ISC" -> url("https://opensource.org/licenses/ISC"),
   )
   .jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
   )
   .nativeSettings(
-    nativeLinkStubs := true
+    nativeLinkStubs := true,
   )
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
