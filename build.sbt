@@ -7,8 +7,8 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("."))
   .settings(
     name := "dllist",
-    version := "0.1.3",
-    scalaVersion := "3.2.0",
+    version := "0.1.4",
+    scalaVersion := "3.5.2",
     scalacOptions ++=
       Seq(
         "-deprecation",
@@ -32,7 +32,6 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
   )
   .nativeSettings(
-    nativeLinkStubs := true,
   )
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
