@@ -117,7 +117,7 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
 
     def iteratorUntil(last: Node): Iterator[Node] =
       new Iterator[Node] {
-        private var node = Node.this
+        private var node     = Node.this
         private var nextNode = node.next
 
         def hasNext: Boolean = (node ne last) && (node ne endSentinel)
@@ -161,7 +161,7 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
 
     def index: Int = {
       var cur: Node = startSentinel
-      var idx = -1
+      var idx       = -1
 
       while (cur.notAfterEnd && ne(cur)) {
         cur = cur.next
@@ -171,13 +171,15 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
       if (cur.notAfterEnd) idx else -1
     }
 
-    def skipForward(n: Int): Node =
+    @tailrec
+    final def skipForward(n: Int): Node =
       if (n > 0)
         following.skipForward(n - 1)
       else
         this
 
-    def skipReverse(n: Int): Node =
+    @tailrec
+    final def skipReverse(n: Int): Node =
       if (n > 0)
         preceding.skipReverse(n - 1)
       else
@@ -244,14 +246,25 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
 
   def lastNodeOption: Option[Node] = if (isEmpty) None else Some(lastNode)
 
-  def node(n: Int): Node = {
+  def node(n: Int): Node =
     require(0 <= n && n < count, s"node index out of range: $n")
 
+    @tailrec
+    def findFromStart(current: Node, remaining: Int): Node =
+      if (remaining == 0) current
+      else findFromStart(current.next, remaining - 1)
+
+    @tailrec
+    def findFromEnd(current: Node, remaining: Int): Node =
+      if (remaining == 0) current
+      else findFromEnd(current.prev, remaining - 1)
+
     if (n <= count / 2)
-      (nodeIterator drop n).next()
+      // Starting from the beginning is faster
+      findFromStart(startSentinel.next, n)
     else
-      (reverseNodeIterator drop (count - 1 - n)).next()
-  }
+      // Starting from the end is faster
+      findFromEnd(endSentinel.prev, count - 1 - n)
 
   def nodeIterator: Iterator[Node] = startSentinel.next.iterator
 
@@ -289,7 +302,39 @@ class DLList[T] extends mutable.AbstractBuffer[T] {
 
   def length: Int = count
 
-  def patchInPlace(from: Int, patch: IterableOnce[T], replaced: Int): DLList.this.type = ???
+  def patchInPlace(from: Int, patch: IterableOnce[T], replaced: Int): DLList.this.type = {
+    // Validate indices
+    require(from >= 0, s"Invalid 'from' index: $from < 0")
+    require(replaced >= 0, s"Invalid 'replaced' count: $replaced < 0")
+
+    if (isEmpty && from == 0 && replaced == 0) {
+      // Special case: patching an empty list at the beginning
+      appendAll(patch)
+      return this
+    }
+
+    // Remove elements that need to be replaced
+    val actualReplaceCount = math.min(replaced, length - from)
+    if (actualReplaceCount > 0) {
+      remove(from, actualReplaceCount)
+    }
+
+    // Insert new elements
+    if (patch.iterator.nonEmpty) {
+      if (isEmpty) {
+        // List became empty after removal
+        appendAll(patch)
+      } else if (from >= length) {
+        // Appending at the end
+        appendAll(patch)
+      } else {
+        // Insert at position
+        insertAll(from, patch)
+      }
+    }
+
+    this
+  }
 
   def insert(idx: Int, elem: T): Unit = node(idx).precede(elem)
 
