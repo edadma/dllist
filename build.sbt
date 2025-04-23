@@ -56,14 +56,10 @@ lazy val dllist = crossProject(JSPlatform, JVMPlatform, NativePlatform)
         "-language:existentials",
         "-language:dynamics",
       ),
-    organization := "io.github.edadma",
-//    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.19" % "test",
-//    libraryDependencies ++= Seq(
-//      "io.github.edadma" %%% "cross-platform" % "0.0.10"
-//    ),
+    organization                            := "io.github.edadma",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.19" % "test",
     libraryDependencies ++= Seq(
-//      "com.github.scopt" %%% "scopt" % "4.1.0",
-//      "com.lihaoyi" %%% "pprint" % "0.9.0" % "test",
+      "com.lihaoyi" %%% "pprint" % "0.9.0" % "test",
     ),
     publishMavenStyle      := true,
     Test / publishArtifact := false,
