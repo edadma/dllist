@@ -1,0 +1,23 @@
+; `dllist` codebase
+
+# library code
+./shared/src/main/scala/io/github/edadma/dllist
+DLIndexedList.scala
+DLList.scala
+NodeRef.scala
+
+# test code
+./shared/src/test/scala/io/github/edadma/dllist
+DLIndexedListTests.scala
+DLListTests.scala
+
+# build config
+./
+build.sbt
+./project
+build.properties
+plugins.sbt
+
+# docs
+./
+README.md
