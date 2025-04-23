@@ -2,8 +2,10 @@
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.edadma/dllist_3.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.edadma/dllist_3)
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.18.2.svg)](https://www.scala-js.org)
-[![Scala Native](https://scala-native.org/img/scala-native-logo-white.png)](https://scala-native.org)
+![GitHub](https://img.shields.io/github/license/edadma/fluxus-daisyui)
+![Scala Version](https://img.shields.io/badge/scala-3.6.4-blue.svg)
+![ScalaJS Version](https://img.shields.io/badge/scalajs-1.18.2-blue.svg)
+![Scala Native Version](https://img.shields.io/badge/scala-native-5.7-blue.svg)
 
 A high-performance doubly-linked list implementation for Scala with both standard list operations and direct node manipulation.
 
