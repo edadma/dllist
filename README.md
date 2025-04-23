@@ -1,6 +1,5 @@
 # dllist
 
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.edadma/dllist_3.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.edadma/dllist_3)
 ![GitHub](https://img.shields.io/github/license/edadma/dllist)
 ![Scala Version](https://img.shields.io/badge/scala-3.6.4-blue.svg)
