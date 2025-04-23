@@ -2,7 +2,7 @@
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.edadma/dllist_3.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.edadma/dllist_3)
-![GitHub](https://img.shields.io/github/license/edadma/fluxus-dllist)
+![GitHub](https://img.shields.io/github/license/edadma/dllist)
 ![Scala Version](https://img.shields.io/badge/scala-3.6.4-blue.svg)
 ![ScalaJS Version](https://img.shields.io/badge/scalajs-1.18.2-blue.svg)
 ![Scala Native Version](https://img.shields.io/badge/scalanative-5.7-blue.svg)
