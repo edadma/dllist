@@ -29,7 +29,7 @@ Built for the Scala 3 ecosystem and cross-compiled for JVM, JavaScript, and Nati
 Add the following to your `build.sbt`:
 
 ```scala
-libraryDependencies += "io.github.edadma" %%% "dllist" % "0.0.1"
+libraryDependencies += "io.github.edadma" %%% "dllist" % "0.0.2"
 ```
 
 The library is cross-compiled for:
