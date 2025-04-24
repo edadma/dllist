@@ -212,6 +212,24 @@ class DLList[T] extends mutable.AbstractBuffer[T]:
         node.isAfterEnd || cur.notAfterEnd
       }
 
+    /** Determines if this node comes after the specified node in the list.
+      *
+      * @param node
+      *   the node to check against
+      * @return
+      *   true if this node comes after the specified node, false otherwise
+      */
+    def isAfter(node: Node): Boolean =
+      if ((this eq node) || isBeforeStart)
+        false
+      else {
+        var cur = this
+
+        while (cur.notBeforeStart && (cur ne node)) cur = cur.preceding
+
+        node.isAfterEnd || cur.notBeforeStart
+      }
+
     /** Creates an iterator that traverses nodes from this node until (but not including) the specified node.
       *
       * @param last
