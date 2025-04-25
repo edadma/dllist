@@ -1,285 +1,146 @@
-# DLList Complete Reference Guide
+# dllist Programmer's Guide
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [DLList Class](#dllist-class)
-3. [Node Class](#node-class)
-4. [Sentinel Class](#sentinel-class)
-5. [DLIndexedList Class](#dlindexedlist-class)
-6. [NodeRef Trait](#noderef-trait)
-7. [Usage Patterns](#usage-patterns)
+This guide provides an overview and reference for the `dllist` library, designed to be concise yet complete enough for AI-assisted code generation and understanding.
 
-## Introduction
+---
 
-This reference documents every method and property of the `dllist` library, a high-performance doubly-linked list implementation for Scala. It includes two main classes: `DLList` and its extension `DLIndexedList`.
+## Overview
 
-Key concepts to remember:
-- Nodes are never `null` - sentinel nodes are used instead
-- Forward traversal checks `isAfterEnd` to detect the end
-- Backward traversal checks `isBeforeStart` to detect the start
+`dllist` is a high-performance mutable doubly-linked list implementation for Scala 3, cross-compiled for JVM, Scala.js, and Native platforms. It offers two primary data structures:
 
-## DLList Class
+- `DLList`: A mutable doubly-linked list with sentinel nodes and O(1) operations for adding/removing at both ends as well as arbitrary positions when you have a node reference.
+- `DLIndexedList`: Extends `DLList` by maintaining an array buffer of node references for O(1) indexed access.
 
-`DLList[T]` is a mutable doubly-linked list with direct node access.
+Additional features include forward/backward traversal, direct node manipulation, and optional node referencing via `DLListNodeRef`.
 
-### Constructors and Factory Methods
+---
+
+## Installation
+
+Add the dependency to your `build.sbt`:
 
 ```scala
-// Empty constructor
-val list = new DLList[T]()
-
-// Factory method with initial elements
-val list = DLList[T](elements: T*)
+libraryDependencies += "io.github.edadma" %%% "dllist" % "0.0.2"
 ```
 
-### Properties
+Ensure you have the appropriate Scala.js and native plugins if targeting those platforms.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `startSentinel` | `Sentinel` | Sentinel node at the start of the list |
-| `endSentinel` | `Sentinel` | Sentinel node at the end of the list |
-| `count` | `Int` (protected) | Number of elements in the list |
+---
 
-### Collection Methods (from AbstractBuffer)
+## Core Concepts
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `addOne` | `(elem: T): DLList.this.type` | Adds element to end, returns this list |
-| `prepend` | `(elem: T): DLList.this.type` | Adds element to beginning, returns this list |
-| `apply` | `(n: Int): T` | Returns element at index n |
-| `clear` | `(): Unit` | Removes all elements |
-| `iterator` | `(): Iterator[T]` | Returns iterator over elements |
-| `length` | `(): Int` | Returns number of elements |
-| `patchInPlace` | `(from: Int, patch: IterableOnce[T], replaced: Int): DLList.this.type` | Replaces elements (not implemented) |
-| `insert` | `(idx: Int, elem: T): Unit` | Inserts element at specified index |
-| `insertAll` | `(n: Int, elems: IterableOnce[T]): Unit` | Inserts multiple elements at index |
-| `remove` | `(idx: Int): T` | Removes and returns element at index |
-| `remove` | `(idx: Int, count: Int): Unit` | Removes range of elements |
-| `update` | `(idx: Int, newelem: T): Unit` | Updates element at index |
+- **Sentinel Nodes:** `DLList` uses `startSentinel` and `endSentinel` to simplify boundary handling, avoiding null checks.
+- **Node (`DLListNode`):** Wraps each element, providing O(1) insert/unlink operations when you hold a reference to the node.
+- **Indexing Layer:** `DLIndexedList` maintains an `ArrayBuffer` of nodes to enable constant-time random access by index.
 
-### Node Access Methods
+---
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `appendElement` | `(elem: T): Node` | Adds element to end, returns its node |
-| `headNode` | `(): Node` | Returns first node (throws if empty) |
-| `headNodeOption` | `(): Option[Node]` | Returns first node as Option |
-| `lastNode` | `(): Node` | Returns last node (throws if empty) |
-| `lastNodeOption` | `(): Option[Node]` | Returns last node as Option |
-| `node` | `(n: Int): Node` | Returns node at index n |
-| `nodeIterator` | `(): Iterator[Node]` | Returns iterator over nodes |
-| `reverseNodeIterator` | `(): Iterator[Node]` | Returns reverse iterator over nodes |
-| `nodeFind` | `(p: T => Boolean): Option[Node]` | Finds first node matching predicate |
-| `reverseNodeFind` | `(p: T => Boolean): Option[Node]` | Finds last node matching predicate |
-| `prependElement` | `(elem: T): Node` | Adds element to beginning, returns its node |
+## DLList
 
-### Override Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `head` | `(): T` | Returns first element |
-| `last` | `(): T` | Returns last element |
-| `reverseIterator` | `(): Iterator[T]` | Returns reverse iterator over elements |
-| `toString` | `(): String` | Returns string representation |
-
-### Protected Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `_insertAll` | `(n: Int, elems: IterableOnce[T]): Node` | Internal helper for insertAll, returns first node |
-
-## Node Class
-
-`Node` represents an element in the list with links to adjacent nodes.
-
-### Constructors
+### Class Signature
 
 ```scala
-// Standard constructor (typically used internally)
-new Node(prev: Node, next: Node, init: T)
-
-// Sentinel constructor (used internally)
-new Node() // Creates empty sentinel node
+class DLList[T] extends scala.collection.mutable.AbstractBuffer[T]
 ```
 
-### Properties and Methods
+### Key Methods
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `element` | `(): T` | Gets the stored element |
-| `element_=` | `(value: T): Unit` | Updates the stored element |
-| `following` | `(): Node` | Gets the next node |
-| `preceding` | `(): Node` | Gets the previous node |
-| `isBeforeStart` | `(): Boolean` | Checks if this is the start sentinel |
-| `notBeforeStart` | `(): Boolean` | Checks if this is not the start sentinel |
-| `isAfterEnd` | `(): Boolean` | Checks if this is the end sentinel |
-| `notAfterEnd` | `(): Boolean` | Checks if this is not the end sentinel |
-| `unlink` | `(): T` | Removes this node from list, returns its element |
-| `follow` | `(v: T): Node` | Inserts new node after this one, returns the new node |
-| `precede` | `(v: T): Node` | Inserts new node before this one, returns the new node |
-| `unlinkUntil` | `(node: Node): Seq[Any]` | Removes nodes from this to (not including) target |
-| `isBefore` | `(node: Node): Boolean` | Checks if this comes before the given node |
-| `isAfter` | `(node: Node): Boolean` | Checks if this comes after the given node |
-| `iteratorUntil` | `(last: Node): Iterator[Node]` | Creates iterator from this to (not including) last |
-| `iterator` | `(): Iterator[Node]` | Creates iterator from this to the end |
-| `reverseIteratorUntil` | `(last: Node): Iterator[Node]` | Creates reverse iterator to (not including) last |
-| `reverseIterator` | `(): Iterator[Node]` | Creates reverse iterator from this to the start |
-| `find` | `(p: T => Boolean): Option[Node]` | Finds first node from here with matching element |
-| `reverseFind` | `(p: T => Boolean): Option[Node]` | Finds first node before here with matching element |
-| `index` | `(): Int` | Returns index of this node or -1 if not found |
-| `skipForward` | `(n: Int): Node` | Moves n positions forward |
-| `skipReverse` | `(n: Int): Node` | Moves n positions backward |
-| `toString` | `(): String` | Returns string representation |
-
-### Protected/Private Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `checkUnlink` | `(): Unit` | Validates node can be unlinked |
-
-## Sentinel Class
-
-`Sentinel` extends `Node` and is used to mark list boundaries.
-
-### Constructor
-
-```scala
-// Used internally by DLList
-new Sentinel(name: String)
-```
-
-### Properties and Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `name` | `String` | Name of this sentinel ("start sentinel" or "end sentinel") |
-| `element` | `(): T` | Throws error - sentinels have no element |
-| `element_=` | `(v: T): Unit` | Throws error - sentinels have no element |
-| `iterator` | `(): Iterator[Node]` | Returns iterator if end sentinel, throws for start |
-| `reverseIterator` | `(): Iterator[Node]` | Returns reverse iterator if start sentinel, throws for end |
-| `toString` | `(): String` | Returns sentinel name |
-
-## DLIndexedList Class
-
-`DLIndexedList[T]` extends `DLList[T]` with O(1) indexed access.
-
-### Constructors and Factory Methods
-
-```scala
-// Empty constructor
-val list = new DLIndexedList[T]()
-
-// Factory method with initial elements
-val list = DLIndexedList[T](elements: T*)
-```
-
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `array` | `ArrayBuffer[Node]` | Protected buffer of node references |
-
-### Overridden Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `clear` | `(): Unit` | Clears list and index array |
-| `appendElement` | `(elem: T): Node` | Adds to end and updates index |
-| `node` | `(n: Int): Node` | Gets node at index with O(1) complexity |
-| `prependElement` | `(elem: T): Node` | Adds to beginning and updates index |
-| `insertAll` | `(n: Int, elems: IterableOnce[T]): Unit` | Inserts elements and updates index |
-| `remove` | `(n: Int): T` | Removes element and updates index |
-| `toString` | `(): String` | Returns string representation |
-
-## NodeRef Trait
-
-`NodeRef` is a trait for objects that need to reference their node in a list.
-
-### Methods
-
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `ref` | `(node: DLList[Any]#Node): Unit` | Called when object is added to list |
-
-## Usage Patterns
-
-### Safe Traversal
-
-```scala
-// Forward traversal
-var node = list.headNode
-while (node.notAfterEnd) {
-  // Process node.element
-  node = node.following
-}
-
-// Backward traversal
-var node = list.lastNode  
-while (node.notBeforeStart) {
-  // Process node.element
-  node = node.preceding
-}
-```
-
-### Safe Empty List Handling
-
-```scala
-// Using node options
-list.headNodeOption.foreach { node =>
-  // Process first node
-}
-
-// Manual check
-if (list.nonEmpty) {
-  val node = list.headNode
-  // Safe to use node
-}
-```
+| Method                                            | Description                                                     |
+|---------------------------------------------------|-----------------------------------------------------------------|
+| `appendElement(elem: T): DLListNode[T]`           | Append `elem` to the end; returns the new node.                |
+| `prependElement(elem: T): DLListNode[T]`          | Prepend `elem` to the start; returns the new node.             |
+| `headNode`, `lastNode`: DLListNode[T]             | Retrieve first/last node (throws if empty).                    |
+| `headNodeOption`, `lastNodeOption`: Option[...]   | Safe variants returning `None` if empty.                        |
+| `node(n: Int): DLListNode[T]`                     | Get node at index (bidirectional scan).                        |
+| `apply(n: Int): T`                                | Element at index `n`.                                          |
+| `insert(idx: Int, elem: T): Unit`                 | Insert `elem` at position `idx`.                                |
+| `insertAll(idx: Int, elems: IterableOnce[T]): Unit` | Bulk insert before `idx`.                                       |
+| `remove(idx: Int): T`                             | Remove element at `idx`, returning it.                          |
+| `remove(idx: Int, cnt: Int): Unit`                | Remove `cnt` elements from `idx`.                               |
+| `clear(): Unit`                                   | Remove all elements.                                            |
+| `iterator: Iterator[T]`                           | Forward traversal.                                              |
+| `reverseIterator: Iterator[T]`                    | Backward traversal.                                             |
+| `nodeIterator: Iterator[DLListNode[T]]`           | Forward node-level traversal.                                   |
+| `reverseNodeIterator: Iterator[DLListNode[T]]`    | Backward node-level traversal.                                  |
+| `nodeFind(p: T => Boolean): Option[...]`          | Find first node matching predicate, forward.                    |
+| `reverseNodeFind(p: T => Boolean): Option[...]`   | Find first node matching predicate, backward.                   |
 
 ### Direct Node Manipulation
 
+Operations on `DLListNode` (`class DLListNode[T]`) include:
+
+- `node.follow(elem: T): DLListNode[T]` — insert after this node.
+- `node.precede(elem: T): DLListNode[T]` — insert before this node.
+- `node.unlink: T` — unlink (remove) this node; returns its element.
+- `node.unlinkUntil(other: DLListNode[T]): Seq[T]` — unlink a contiguous block up to `other`.
+- Position checks: `isBefore`, `isAfter`, `isBeforeStart`, `isAfterEnd`.
+- Iterators: `iterator`, `reverseIterator`, plus `iteratorUntil` and `reverseIteratorUntil`.
+
+---
+
+## DLListNodeRef
+
 ```scala
-// Get node reference
-val node = list.node(3)
-
-// Insert elements around it
-val newNext = node.follow(42)
-val newPrev = node.precede(41)
-
-// Remove the node
-val value = node.unlink
-
-// Check position relative to other nodes
-if (nodeA.isBefore(nodeB)) {
-  // nodeA comes before nodeB
+trait DLListNodeRef[T] {
+  /** Called when this object is added as a node; provides node reference. */
+  infix def ref(node: DLListNode[T]): Unit
 }
 ```
 
-### NodeRef Implementation
+Use this trait to track the node associated with an object when it is inserted.
+
+---
+
+## DLIndexedList
+
+### Class Signature
 
 ```scala
-class TrackedItem(val value: Int) extends NodeRef {
-  private var myNode: DLList[Any]#Node = _
-  
-  // Called when added to list
-  infix def ref(node: DLList[Any]#Node): Unit = {
-    myNode = node
-  }
-  
-  // Methods that use the node reference
-  def removeFromList(): Unit = {
-    if (myNode != null) {
-      myNode.unlink
-      myNode = null
-    }
-  }
-  
-  def getNext[T](): Option[T] = {
-    if (myNode != null && myNode.following.notAfterEnd) {
-      Some(myNode.following.element.asInstanceOf[T])
-    } else {
-      None
-    }
-  }
-}
+class DLIndexedList[T] extends DLList[T]
+```
+
+Maintains an internal:
+
+```scala
+protected lazy val array: scala.collection.mutable.ArrayBuffer[DLListNode[T]]
+```
+
+#### Overridden Methods
+
+- `clear()`: clears both the list and the index array.
+- `appendElement(elem: T)`: append plus `array += n`.
+- `prependElement(elem: T)`: prepend plus `n +=: array`.
+- `node(n: Int)`: O(1) index access via `array(n)`.
+- `insertAll(idx, elems)`: updates `array` with inserted nodes.
+- `remove(idx)`: updates `array` and returns removed element.
+- `toString`: prints in `DLIndexedList(e1, e2, …)` format.
+
+---
+
+## Usage Examples
+
+```scala
+import io.github.edadma.dllist._
+
+// DLList example
+type L = DLList[Double]
+val list: L = DLList(1.0, 2.0, 3.0)
+list += 4.0                    // [1.0, 2.0, 3.0, 4.0]
+list.prepend(0.0)              // [0.0, 1.0, 2.0, 3.0, 4.0]
+
+val thirdElem: Double = list(2) // 2.0
+
+// Direct node manipulation
+val node = list.headNode       // node[0.0]
+node.follow(0.5)               // insert after head
+node.precede(-0.5)             // insert before head
+
+// Remove by index
+list.remove(3)
+
+// DLIndexedList example
+val idxList = DLIndexedList("a", "b", "c")
+val second: String = idxList(1) // "b"
+idxList.insertAll(1, List("x","y"))
+println(idxList)               // DLIndexedList(a, x, y, b, c)
 ```
