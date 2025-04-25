@@ -62,7 +62,7 @@ class DLListNode[T](
     assertLinked()
     val node = new DLListNode(owner, this, next, elem)
     elem match
-      case ref: NodeRef[T] @unchecked => ref ref node
+      case ref: DLListNodeRef[T] @unchecked => ref ref node
       case _                          =>
     next.prev = node
     next = node
@@ -74,7 +74,7 @@ class DLListNode[T](
     assertLinked()
     val node = new DLListNode(owner, prev, this, elem)
     elem match
-      case ref: NodeRef[T] @unchecked => ref ref node
+      case ref: DLListNodeRef[T] @unchecked => ref ref node
       case _                          =>
     prev.next = node
     prev = node
