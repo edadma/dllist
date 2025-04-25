@@ -30,7 +30,7 @@ object DLIndexedList:
 class DLIndexedList[T] extends DLList[T]:
   /** Array buffer that stores references to all nodes for O(1) index access.
     */
-  protected lazy val array = new ArrayBuffer[Node]
+  protected lazy val array = new ArrayBuffer[DLListNode[T]]
 
   /** Clears all elements from the list. Overrides the base implementation to also clear the index array.
     */
@@ -47,7 +47,7 @@ class DLIndexedList[T] extends DLList[T]:
     * @return
     *   the newly created node
     */
-  override def appendElement(elem: T): Node = {
+  override def appendElement(elem: T): DLListNode[T] = {
     val n = super.appendElement(elem)
 
     array += n
@@ -64,8 +64,8 @@ class DLIndexedList[T] extends DLList[T]:
     * @throws IllegalArgumentException
     *   if the index is out of bounds
     */
-  override def node(n: Int): Node = {
-    require(0 <= n && n < count, s"node index out of range: $n")
+  override def node(n: Int): DLListNode[T] = {
+    require(0 <= n && n < elemCount, s"node index out of range: $n")
 
     array(n)
   }
@@ -78,7 +78,7 @@ class DLIndexedList[T] extends DLList[T]:
     * @return
     *   the newly created node
     */
-  override def prependElement(elem: T): Node = {
+  override def prependElement(elem: T): DLListNode[T] = {
     val n = super.prependElement(elem)
 
     n +=: array
