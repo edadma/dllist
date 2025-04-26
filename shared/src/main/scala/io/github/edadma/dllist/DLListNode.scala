@@ -142,17 +142,29 @@ class DLListNode[T](
     checkUnlink()
     assertLinked()
     require(isBefore(node), "node to unlink up to must come after current node")
+
     val buf = new ListBuffer[T]
+
+    // splice out the whole block in one go:
+    val before = this.prev
+    before.next = node
+    node.prev = before
+
+    // now walk the block, detaching each node
     var cur = this
-    // splice out the block
-    node.prev = prev
-    prev.next = node
+
     while cur ne node do
+      val nextCur = cur.next // grab the successor before we null it
+
       buf += cur.v
+      owner.elemCount -= 1
+
+      // detach the node completely
       cur.prev = null
       cur.next = null
-      owner.elemCount -= 1
-      cur = cur.next
+
+      cur = nextCur
+
     buf.toList
 
   /** Tests whether this node comes before `node` in list order.
